@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOI — Mic & Notification test</title>
+<style>
+  body{margin:0;min-height:100vh;background:#0b0714;color:#f3eefc;font-family:system-ui,'Hind Siliguri',sans-serif;padding:22px;box-sizing:border-box}
+  h1{font-size:20px;margin:0 0 4px;color:#ff7a8a}
+  .sub{opacity:.7;font-size:13px;margin-bottom:18px}
+  .card{background:#171028;border:1px solid #2c2147;border-radius:16px;padding:16px;margin-bottom:14px}
+  button{width:100%;padding:13px;border:0;border-radius:12px;font-size:15px;font-weight:700;color:#fff;background:linear-gradient(90deg,#ff9a5a,#ff5f7e);margin-top:8px}
+  .st{margin-top:10px;font-size:14px;min-height:20px;line-height:1.5}
+  .bar{height:12px;border-radius:8px;background:#2c2147;overflow:hidden;margin-top:10px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#20e3b2,#00b4ff);transition:width .08s}
+  a{color:#9ad;font-size:13px}
+</style>
+</head>
+<body>
+<h1>Mic &amp; Notification test</h1>
+<div class="sub" id="env">…</div>
+
+<div class="card">
+  <b>🎤 মাইক</b>
+  <button id="micBtn">মাইক চালু করুন</button>
+  <div class="bar"><i id="lvl"></i></div>
+  <div class="st" id="micSt">কথা বললে বার নড়বে।</div>
+</div>
+
+<div class="card">
+  <b>🔔 নোটিফিকেশন</b>
+  <button id="nfAsk">অনুমতি চান</button>
+  <button id="nfSend">টেস্ট নোটিফিকেশন পাঠান</button>
+  <div class="st" id="nfSt"></div>
+</div>
+
+<a href="index.html">← লগইন পেজে ফিরুন</a>
+
+<script>
+const $ = id => document.getElementById(id);
+$('env').textContent = (matchMedia('(display-mode: standalone)').matches ? 'অ্যাপের ভিতরে চলছে' : 'ব্রাউজারে চলছে') + ' · ' + location.host;
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(()=>{});
+
+/* ── মাইক ── */
+let stream = null, ctx = null, raf = 0;
+$('micBtn').onclick = async () => {
+  if (stream){ stream.getTracks().forEach(t => t.stop()); stream = null; cancelAnimationFrame(raf); if (ctx) ctx.close(); $('lvl').style.width = '0'; $('micBtn').textContent = 'মাইক চালু করুন'; $('micSt').textContent = 'মাইক বন্ধ।'; return; }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    $('micBtn').textContent = 'মাইক বন্ধ করুন';
+    $('micSt').textContent = '✔ মাইক চালু। কথা বলুন…';
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const an = ctx.createAnalyser(); an.fftSize = 256;
+    ctx.createMediaStreamSource(stream).connect(an);
+    const data = new Uint8Array(an.frequencyBinCount);
+    (function tick(){ an.getByteTimeDomainData(data); let m = 0; for (const v of data) m = Math.max(m, Math.abs(v - 128)); $('lvl').style.width = Math.min(100, m * 1.6) + '%'; raf = requestAnimationFrame(tick); })();
+  } catch(e){ $('micSt').textContent = '✖ মাইক চালু হয়নি: ' + (e.name || '') + ' ' + (e.message || ''); }
+};
+
+/* ── নোটিফিকেশন ── */
+function nfShow(){ $('nfSt').textContent = !('Notification' in window) ? 'এই ব্রাউজারে নোটিফিকেশন নেই।' : 'বর্তমান অবস্থা: ' + Notification.permission; }
+nfShow();
+$('nfAsk').onclick = async () => { try { await Notification.requestPermission(); } catch(e){} nfShow(); };
+$('nfSend').onclick = async () => {
+  try {
+    if (Notification.permission !== 'granted'){ $('nfSt').textContent = 'আগে "অনুমতি চান" চাপুন এবং Allow করুন।'; return; }
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification('MOI', { body: 'নোটিফিকেশন কাজ করছে ✔', icon: '../icon-192.png' });
+    $('nfSt').textContent = '✔ পাঠানো হয়েছে (ফোনের উপরের বারে দেখুন)';
+  } catch(e){ $('nfSt').textContent = '✖ ' + (e.message || e); }
+};
+</script>
+</body>
+</html>

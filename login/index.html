@@ -10,8 +10,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400..800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="manifest" href="../manifest.json">
-<meta name="theme-color" content="#0b0714">
 <link rel="stylesheet" href="login.css">
 <link rel="stylesheet" href="../shared/theme.css">
 </head>
@@ -34,7 +32,7 @@
       <div class="view" id="view-login">
         <div class="top rise" style="animation-delay:.15s">
           <h1 class="title">MOI</h1>
-          <div class="tagline">Connect · Play · Vibe</div>
+          <div class="tagline">Connect · Play · Vibe · v2</div>
         </div>
 
         <div class="mascot-wrap rise" style="animation-delay:.3s">
@@ -96,6 +94,7 @@
         <div class="bottom rise" style="animation-delay:.6s">
           <div class="problems"><i class="fa-solid fa-circle-question"></i> Having problems?</div>
           <div class="terms">Agree and Continue &nbsp;·&nbsp; <a href="#">Terms of Service</a> &amp; <a href="#">Privacy Policy</a></div>
+          <div style="margin-top:8px;font-size:11px;opacity:.75;text-align:center"><a href="permissions-test.html" style="color:inherit;text-decoration:underline">🎤🔔 Mic &amp; Notification test</a></div>
         </div>
       </div>
 
@@ -192,6 +191,5 @@
 <script src="login-auth.js"></script>
 <script src="particles.js"></script>
 <script src="login.js"></script>
-<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("../sw.js").catch(function(e){ console.warn("SW", e); });</script>
 </body>
 </html>
