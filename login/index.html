@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400..800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="manifest" href="../manifest.json">
+<meta name="theme-color" content="#0b0714">
 <link rel="stylesheet" href="login.css">
 <link rel="stylesheet" href="../shared/theme.css">
 </head>
@@ -190,5 +192,6 @@
 <script src="login-auth.js"></script>
 <script src="particles.js"></script>
 <script src="login.js"></script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("../sw.js").catch(function(e){ console.warn("SW", e); });</script>
 </body>
 </html>
